@@ -250,6 +250,45 @@ document.addEventListener('keydown', event => {
 
 });
 
+
+const buttons = document.querySelectorAll('.buttons'); 
+const left = document.querySelector('.left'); 
+const right = document.querySelector('.right'); 
+const down = document.querySelector('.down'); 
+const rotatepiece = document.querySelector('.rotate'); 
+
+//transition on click
+function shadow(e) {
+  this.classList.add('playing');
+  
+}
+
+function removeTransition(e) { 
+  if(e.propertyName !== 'transform') return; 
+  this.classList.remove('playing'); 
+}
+
+//button actions
+function moveleft() {
+  playerMove(-1);
+}
+
+function moveright() {
+  playerMove(1);
+}
+
+function rpiece () {
+  playerRotate(1);
+}
+
+buttons.forEach(button => button.addEventListener('click', shadow ));
+buttons.forEach(button => button.addEventListener('transitionend', removeTransition ));
+left.addEventListener('click', moveleft );
+right.addEventListener('click', moveright );
+down.addEventListener('click', playerDrop);
+rotatepiece.addEventListener('click', rpiece );
+
+
 playerReset();
 updateScore();
 update(); 
