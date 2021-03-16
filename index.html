@@ -4,6 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tetris</title>
+</head>
+
+<body>
+  <div id="score"></div>
+  <canvas id="tetris" width="240" height="400"></canvas>
+  <div class="container">
+      <div class="direction">
+          <div class="leftandright">
+              <button class="move left buttons"><</button>
+              <button class="move right buttons">></button>
+          </div>
+          <button class="move down buttons">v</button>
+      </div>
+      <button class="rotate buttons">Rotate</button>
+  </div>
+
   <style>
     body{
       background: #202028;
@@ -13,52 +29,48 @@
       text-align: center;
       box-sizing: border-box;
     }
+
     canvas{
       border: solid .2em #fff;
     }
 
     .container{
-      margin: 4rem;
+      margin: 3rem;
       display: flex;
-      justify-content: space-around;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .direction, .leftandright{
+      display: flex;
+      justify-content: center;
       align-items: center;
     }
 
     .direction{
-      display: flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
     }
 
-    .leftandright{
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    .rotate, .move{
+      background-color: #202028;
+      color: #fff;
+      border-color: transparent;
+      background: linear-gradient(145deg, #22222b, #1d1d24);
+      box-shadow:  8px 8px 17px #0f0f13,
+                  -8px -8px 17px #31313d;
     }
 
     .rotate{
-      background-color: #202028;
-      color: #fff;
       width: 5rem;
       height: 5rem;
-      border-color: transparent;
       border-radius: 50%;
-      background: linear-gradient(145deg, #22222b, #1d1d24);
-      box-shadow:  8px 8px 17px #0f0f13,
-                  -8px -8px 17px #31313d;
+      
     }
 
     .move{
-      background-color: #202028;
-      color: #fff;
       width: 4rem;
       height: 2rem;
-      border-color: transparent;
       border-radius: .5rem;
-      background: linear-gradient(145deg, #22222b, #1d1d24);
-      box-shadow:  8px 8px 17px #0f0f13,
-                  -8px -8px 17px #31313d;
     }
 
     .rotate, .move:focus{
@@ -74,29 +86,15 @@
     }
 
     .playing {
-    transform: scale(1.1);
-    border-color: #ffc600;
+    transform: scale(0.9);
     }
 
     .buttons{
       transition: all .07s ease;
     }
   </style>
-</head>
 
-<body>
-  <div id="score"></div>
-  <canvas id="tetris" width="240" height="400"></canvas>
-  <div class="container">
-      <div class="direction">
-          <div class="leftandright">
-              <button class="move left buttons">⬅</button>
-              <button class="move right buttons">➡</button>
-          </div>
-          <button class="move down buttons">⬇</button>
-      </div>
-      <button class="rotate buttons">Rotate</button>
-  </div>
+
   <script src="tetris.js"></script>
 </body>
 </html>

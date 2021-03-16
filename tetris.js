@@ -258,7 +258,7 @@ const down = document.querySelector('.down');
 const rotatepiece = document.querySelector('.rotate'); 
 
 //transition on click
-function shadow(e) {
+function clicked(e) {
   this.classList.add('playing');
   
 }
@@ -281,7 +281,7 @@ function rpiece () {
   playerRotate(1);
 }
 
-buttons.forEach(button => button.addEventListener('click', shadow ));
+buttons.forEach(button => button.addEventListener('click', clicked));
 buttons.forEach(button => button.addEventListener('transitionend', removeTransition ));
 left.addEventListener('click', moveleft );
 right.addEventListener('click', moveright );
