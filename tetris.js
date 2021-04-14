@@ -1,215 +1,204 @@
-const canvas = document.getElementById('tetris');
-const context = canvas.getContext('2d');  
+const canvas = document.getElementById('tetris')
+const context = canvas.getContext('2d')
 
-context.scale(20, 20);
+context.scale(20, 20)
 
-function arenaSweep() {
-  let rowCount = 1;
+function arenaSweep () {
+  let rowCount = 1
 
   outer: for (let y = arena.length - 1; y > 0; --y) {
     for (let x = 0; x < arena[y].length; ++x) {
       if (arena[y][x] === 0) {
-        continue outer;
+        continue outer
       }
-    }    
-    const row = arena.splice(y, 1)[0].fill(0);
-    arena.unshift(row);
-    ++y;
+    }
+    const row = arena.splice(y, 1)[0].fill(0)
+    arena.unshift(row)
+    ++y
 
-    player.score += rowCount * 10;
-    rowCount *= 2;
+    player.score += rowCount * 10
+    rowCount *= 2
   }
 }
 
-function collide(arena, player) {
-  const [m, o] = [player.matrix, player.pos];
+function collide (arena, player) {
+  const [m, o] = [player.matrix, player.pos]
   for (let y = 0; y < m.length; ++y) {
-    for (let x =  0; x < m[y].length; ++x) {
-      if ( m[y][x] !== 0 &&
-          (arena[y + o.y] &&
-            arena[y + o.y][x + o.x]) !== 0) {
-              return true;
+    for (let x = 0; x < m[y].length; ++x) {
+      if (m[y][x] !== 0 && (arena[y + o.y] && arena[y + o.y][x + o.x]) !== 0) {
+        return true
       }
     }
   }
-  return false;
+  return false
 }
 
-function createPiece(type) {
+function createPiece (type) {
   if (type === 'T') {
     return [
       [0, 0, 0],
       [1, 1, 1],
-      [0, 1, 0],
-    ];    
+      [0, 1, 0]
+    ]
   } else if (type === 'O') {
     return [
       [2, 2],
-      [2, 2],
-    ];
+      [2, 2]
+    ]
   } else if (type === 'L') {
     return [
       [0, 3, 0],
       [0, 3, 0],
-      [0, 3, 3],
-    ];
+      [0, 3, 3]
+    ]
   } else if (type === 'J') {
     return [
       [0, 4, 0],
       [0, 4, 0],
-      [4, 4, 0],
-    ];
+      [4, 4, 0]
+    ]
   } else if (type === 'I') {
     return [
       [0, 5, 0, 0],
       [0, 5, 0, 0],
       [0, 5, 0, 0],
-      [0, 5, 0, 0],
-    ];
+      [0, 5, 0, 0]
+    ]
   } else if (type === 'S') {
     return [
       [0, 6, 6],
       [6, 6, 0],
-      [0, 0, 0],
-    ];
+      [0, 0, 0]
+    ]
   } else if (type === 'Z') {
     return [
       [7, 7, 0],
       [0, 7, 7],
-      [0, 0, 0],
-    ];
+      [0, 0, 0]
+    ]
   }
 }
 
-function createMatrix(w, h) {
-  const matrix = [];
+function createMatrix (w, h) {
+  const matrix = []
   while (h--) {
-    matrix.push(new Array(w).fill(0));
+    matrix.push(new Array(w).fill(0))
   }
-  return matrix;
+  return matrix
 }
 
-function draw() {
-  context.fillStyle = '#000';
-  context.fillRect(0, 0, canvas.width, canvas.height);
+function draw () {
+  context.fillStyle = '#000'
+  context.fillRect(0, 0, canvas.width, canvas.height)
 
   // drawMatrix(matrix, {x: 5, y: 5});
-  drawMatrix(arena, {x: 0, y: 0});
-  drawMatrix(player.matrix, player.pos);
+  drawMatrix(arena, { x: 0, y: 0 })
+  drawMatrix(player.matrix, player.pos)
 }
 
-function drawMatrix(matrix, offset) {
-    matrix.forEach((row, y) => {
-      row.forEach((value, x) => {
-        if (value !== 0) {
-          context.fillStyle = colors[value];
-          context.fillRect(x + offset.x,
-                           y + offset.y,
-                           1, 1);
-        }
-      });
-    }); 
-};
+function drawMatrix (matrix, offset) {
+  matrix.forEach((row, y) => {
+    row.forEach((value, x) => {
+      if (value !== 0) {
+        context.fillStyle = colors[value]
+        context.fillRect(x + offset.x, y + offset.y, 1, 1)
+      }
+    })
+  })
+}
 
-function merge(arena, player) {
+function merge (arena, player) {
   player.matrix.forEach((row, y) => {
     row.forEach((value, x) => {
       if (value !== 0) {
-        arena[y + player.pos.y][x + player.pos.x] = value;
+        arena[y + player.pos.y][x + player.pos.x] = value
       }
-    });
-  }); 
+    })
+  })
 }
 
-function playerDrop() {
-  player.pos.y++;
+function playerDrop () {
+  player.pos.y++
 
   if (collide(arena, player)) {
-    player.pos.y--;
-    merge(arena, player);
-    playerReset();
-    arenaSweep();
-    updateScore();
+    player.pos.y--
+    merge(arena, player)
+    playerReset()
+    arenaSweep()
+    updateScore()
   }
 
-  dropCounter = 0; 
+  dropCounter = 0
 }
 
-function playerMove(dir) {
-  player.pos.x += dir;
+function playerMove (dir) {
+  player.pos.x += dir
   if (collide(arena, player)) {
-    player.pos.x -= dir;
+    player.pos.x -= dir
   }
 }
 
-function playerReset() {
-  const pieces = 'ILJOTSZ';
-  player.matrix = createPiece(pieces[pieces.length * Math.random() | 0]);
-  player.pos.y = 0;
-  player.pos.x = (arena[0].length / 2 | 0) - 
-                 (player.matrix[0].length / 2 | 0);
-    if (collide(arena, player)) {
-      arena.forEach(row => row.fill(0));
-      player.score = 0;
-      updateScore();
-    }
+function playerReset () {
+  const pieces = 'ILJOTSZ'
+  player.matrix = createPiece(pieces[(pieces.length * Math.random()) | 0])
+  player.pos.y = 0
+  player.pos.x =
+    ((arena[0].length / 2) | 0) - ((player.matrix[0].length / 2) | 0)
+  if (collide(arena, player)) {
+    arena.forEach(row => row.fill(0))
+    player.score = 0
+    updateScore()
+  }
 }
 
-function playerRotate(dir) {
-  const pos = player.pos.x;
-  let offset = 1;
-  rotate(player.matrix, dir);
+function playerRotate (dir) {
+  const pos = player.pos.x
+  let offset = 1
+  rotate(player.matrix, dir)
   while (collide(arena, player)) {
-    player.pos.x += offset;
-    offset = -(offset + (offset > 0 ? 1 : -1));
+    player.pos.x += offset
+    offset = -(offset + (offset > 0 ? 1 : -1))
     if (offset > player.matrix[0].length) {
-      rotate(player.matrix, -dir);
-      player.pos.x = pos;
-      return;
+      rotate(player.matrix, -dir)
+      player.pos.x = pos
+      return
     }
   }
 }
 
-function rotate(matrix, dir) {
+function rotate (matrix, dir) {
   for (let y = 0; y < matrix.length; ++y) {
-      for (let x = 0; x < y; ++x) {
-        [
-          matrix[x][y],
-          matrix[y][x],
-        ] = [
-          matrix[y][x],
-          matrix[x][y],
-        ];
-      }
+    for (let x = 0; x < y; ++x) {
+      ;[matrix[x][y], matrix[y][x]] = [matrix[y][x], matrix[x][y]]
+    }
   }
-      if (dir > 0) {
-        matrix.forEach(row => row.reverse());
-      } else {
-        matrix.reverse();
-      }
-  
+  if (dir > 0) {
+    matrix.forEach(row => row.reverse())
+  } else {
+    matrix.reverse()
+  }
 }
- 
-let dropCounter = 0;
-let dropInterval = 1000;
 
-let lastTime = 0;
+let dropCounter = 0
+let dropInterval = 1000
 
-function update(time = 0) {
-  const deltaTime = time - lastTime;
-  lastTime  = time;
+let lastTime = 0
 
-  dropCounter += deltaTime;
+function update (time = 0) {
+  const deltaTime = time - lastTime
+  lastTime = time
+
+  dropCounter += deltaTime
   if (dropCounter > dropInterval) {
-    playerDrop();
+    playerDrop()
   }
 
-  draw();
-  requestAnimationFrame(update);
-};
+  draw()
+  requestAnimationFrame(update)
+}
 
-function updateScore() {
-  document.getElementById('score').innerText = player.score;
+function updateScore () {
+  document.getElementById('score').innerText = player.score
 }
 
 const colors = [
@@ -220,75 +209,84 @@ const colors = [
   '#F538FF',
   '#FF8E0D',
   '#FFE138',
-  '#3877FF',
-
+  '#3877FF'
 ]
-
-
 
 const arena = createMatrix(12, 20)
 
-
 const player = {
-    pos: {x: 0, y: 0},
-    matrix: null,
-    score: 0,
+  pos: { x: 0, y: 0 },
+  matrix: null,
+  score: 0
 }
 
 document.addEventListener('keydown', event => {
-  if (event.keyCode === 37 ) {
-    playerMove(-1);
+  if (event.keyCode === 37) {
+    playerMove(-1)
   } else if (event.keyCode === 39) {
-    playerMove(1);
+    playerMove(1)
   } else if (event.keyCode === 40) {
-    playerDrop();
+    playerDrop()
   } else if (event.keyCode === 13) {
-    playerRotate(-1);
+    playerRotate(-1)
   } else if (event.keyCode === 16) {
-    playerRotate(1);
+    playerRotate(1)
   }
+})
 
-});
+const buttons = document.querySelectorAll('.buttons')
+const left = document.querySelector('.left')
+const right = document.querySelector('.right')
+const down = document.querySelector('.down')
+const rotatepiece = document.querySelector('.rotate')
+const pause = document.querySelector('.pause')
 
-
-const buttons = document.querySelectorAll('.buttons'); 
-const left = document.querySelector('.left'); 
-const right = document.querySelector('.right'); 
-const down = document.querySelector('.down'); 
-const rotatepiece = document.querySelector('.rotate'); 
 
 //transition on click
-function clicked(e) {
-  this.classList.add('playing');
-  
+function clicked (e) {
+  this.classList.add('playing')
 }
 
-function removeTransition(e) { 
-  if(e.propertyName !== 'transform') return; 
-  this.classList.remove('playing'); 
+function removeTransition (e) {
+  if (e.propertyName !== 'transform') return
+  this.classList.remove('playing')
 }
 
 //button actions
-function moveleft() {
-  playerMove(-1);
+function moveleft () {
+  playerMove(-1)
 }
 
-function moveright() {
-  playerMove(1);
+function moveright () {
+  playerMove(1)
 }
 
 function rpiece () {
-  playerRotate(1);
+  playerRotate(1)
 }
 
-buttons.forEach(button => button.addEventListener('click', clicked));
-buttons.forEach(button => button.addEventListener('transitionend', removeTransition ));
-left.addEventListener('click', moveleft );
-right.addEventListener('click', moveright );
-down.addEventListener('click', playerDrop);
-rotatepiece.addEventListener('click', rpiece );
+function pauseGame() {
+      if (dropInterval == 1000000) {
+            dropInterval = 1000
+            pause.innerHTML = 'pause'
+      } else {
+            dropInterval = 1000000
+            pause.innerHTML = 'play'
+      }
+  
+  console.log('clicked');  
+}
 
+buttons.forEach(button => button.addEventListener('click', clicked))
+buttons.forEach(button =>
+  button.addEventListener('transitionend', removeTransition)
+)
+left.addEventListener('click', moveleft)
+right.addEventListener('click', moveright)
+down.addEventListener('click', playerDrop)
+rotatepiece.addEventListener('click', rpiece)
+pause.addEventListener('click', pauseGame)
 
-playerReset();
-updateScore();
-update(); 
+playerReset()
+updateScore()
+update()
